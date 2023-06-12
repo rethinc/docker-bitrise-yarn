@@ -1,4 +1,4 @@
-FROM bitriseio/docker-bitrise-base:latest
+FROM bitriseio/bitrise-base-20.04:latest
 
 RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
