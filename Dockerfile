@@ -1,6 +1,25 @@
-FROM bitriseio/bitrise-base-20.04:latest
+FROM bitriseio/ubuntu-noble-24.04-bitrise-2025-base:latest
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get update && apt-get install -y nodejs yarn
+# Remove asdf nodejs plugin if it exists
+RUN asdf plugin remove nodejs || true
+
+# Set environment variables
+ENV NVM_DIR=/root/.nvm
+ENV NODE_VERSION=16.20.2
+
+# Install NVM and Node.js
+RUN mkdir $NVM_DIR && \
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && \
+    . $NVM_DIR/nvm.sh && \
+    nvm install $NODE_VERSION && \
+    nvm use $NODE_VERSION && \
+    nvm alias default $NODE_VERSION
+
+# Update PATH to include Node.js binaries
+ENV PATH="$NVM_DIR/versions/node/v${NODE_VERSION}/bin:${PATH}"
+
+# Install Yarn using npm
+RUN . $NVM_DIR/nvm.sh && npm install -g yarn
+
+# Verify installations
+RUN . $NVM_DIR/nvm.sh && node --version && npm --version && yarn --version
